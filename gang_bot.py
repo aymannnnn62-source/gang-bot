@@ -3,12 +3,9 @@ import random
 import telebot
 from telebot import types
 
-# جلب توكن البوت من متغيرات البيئة أو وضعه مباشرة
 TOKEN = os.getenv("BOT_TOKEN", "حط_التوكن_حقك_هنا_اذا_ما_استخدمت_البيئة")
 bot = telebot.TeleBot(TOKEN)
 
-# قاعدة بيانات مؤقتة لتخزين بيانات اللاعبين
-# المفتاح هو (user_id)
 players = {}
 
 def get_player(user_id, username):
@@ -26,7 +23,6 @@ def get_player(user_id, username):
         }
     return players[user_id]
 
-# 1. أمر البداية /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     user = message.from_user
@@ -47,7 +43,6 @@ def send_welcome(message):
     )
     bot.reply_to(message, text)
 
-# 2. الملف الشخصي /profile
 @bot.message_handler(commands=['profile'])
 def show_profile(message):
     user = message.from_user
@@ -66,13 +61,12 @@ def show_profile(message):
     )
     bot.reply_to(message, text)
 
-# 3. تنفيذ جريمة /crime
 @bot.message_handler(commands=['crime'])
 def do_crime(message):
     user = message.from_user
     p = get_player(user.id, user.first_name)
     
-    success = random.choice([True, True, False]) # نسبة نجاح 66%
+    success = random.choice([True, True, False])
     if success:
         earned = random.randint(300, 900)
         p["money"] += earned
@@ -83,7 +77,6 @@ def do_crime(message):
         p["money"] = max(0, p["money"] - lost)
         bot.reply_to(message, f"🚨 فشلت العملية وقبضت عليك الشرطة! خسرت -${lost}")
 
-# 4. السوق السوداء /shop
 @bot.message_handler(commands=['shop'])
 def show_shop(message):
     shop_text = (
@@ -97,7 +90,6 @@ def show_shop(message):
     )
     bot.reply_to(message, shop_text)
 
-# 5. الشراء /buy
 @bot.message_handler(commands=['buy'])
 def buy_item(message):
     user = message.from_user
@@ -133,7 +125,6 @@ def buy_item(message):
         
     bot.reply_to(message, f"🎉 مبروك! تم شراء {target['name']} بنجاح وانضافت لعزبتك.")
 
-# 6. قائمة الزعماء /leaderboard
 @bot.message_handler(commands=['leaderboard'])
 def leaderboard(message):
     if not players:
@@ -147,12 +138,10 @@ def leaderboard(message):
         
     bot.reply_to(message, text)
 
-# 7. سرقة لاعب آخر /rob
 @bot.message_handler(commands=['rob'])
 def rob_player(message):
     bot.reply_to(message, "⚠️ ميزة السرقة بين الأعضاء قيد التحديث الكبير، انتظرها قريباً!")
 
-# 8. الراتب اليومي /daily
 @bot.message_handler(commands=['daily'])
 def daily_reward(message):
     user = message.from_user
@@ -160,7 +149,6 @@ def daily_reward(message):
     p["money"] += 1000
     bot.reply_to(message, "🎁 استلمت راتب العصابة اليومي بنجاح: +$1000!")
 
-# 9. العمل /work
 @bot.message_handler(commands=['work'])
 def work_job(message):
     user = message.from_user
@@ -169,7 +157,6 @@ def work_job(message):
     p["money"] += earned
     bot.reply_to(message, f"🛠️ اشتغلت في أعمال العصابة ورجعت بمبلغ: +${earned}")
 
-# 10. العصابة /gang
 @bot.message_handler(commands=['gang'])
 def manage_gang(message):
     args = message.text.split(maxsplit=1)
